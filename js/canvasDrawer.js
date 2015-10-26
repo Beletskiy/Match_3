@@ -11,21 +11,17 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
         ctx = this.ctx,
         width = canvasArr.length,
         height = canvasArr[0].length,
-        colorOfTile;
+        colorOfTile,
         offset = 0.5;
 
-    this.canvasField.width = this.cellSize*width + offset*2;
-    this.canvasField.height = this.cellSize*height + offset*2;
-
-    /*ctx.strokeStyle = 'black';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(offset, offset, width*cellSize , height*cellSize ); */
+    this.canvasField.width = cellSize*width + offset*2;
+    this.canvasField.height = cellSize*height + offset*2;
 
     for (var j = 0; j < height; j++) {
         for (var i = 0; i < width; i++) {
-            colorOfTile = this.colors[canvasArr[i][j][0]];
-            this.ctx.fillStyle = colorOfTile;
-            this.ctx.fillRect(i*this.cellSize, j*this.cellSize, this.cellSize, this.cellSize);
+            colorOfTile = this.colors[canvasArr[i][j].color];
+            ctx.fillStyle = colorOfTile;
+            ctx.fillRect(i*cellSize + 1, j*cellSize + 1, cellSize - 1, cellSize - 1);
         }
     }
 };
