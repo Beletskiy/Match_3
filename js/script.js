@@ -57,7 +57,7 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
                     }
                     groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
-                   // console.log(groups);
+                    console.log(groups);
                 }
             }   else {
                 numberOfMatches = 0;
@@ -79,7 +79,7 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
                     }
                     groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
-                 //   console.log(groups);
+                    console.log(groups);
                 }
             }   else {
                 numberOfMatches = 0;
@@ -124,6 +124,8 @@ Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOf
 };
 
 Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
+    var maxX, maxY,
+        minX, minY;
 
     if (this.isFirstClick) {
         this.firstClickedTail.x = mousePositionX;
@@ -139,6 +141,11 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
         this.secondClickedTail.x, this.secondClickedTail.y))) {
         this.swap(this.firstClickedTail.x, this.firstClickedTail.y, this.secondClickedTail.x, this.secondClickedTail.y);
         game.drawer.drawField(this.modelArr);
+        maxX = Math.max(this.firstClickedTail.x, this.secondClickedTail.x);
+        minX = Math.min(this.firstClickedTail.x, this.secondClickedTail.x);
+        maxY = Math.max(this.firstClickedTail.y, this.secondClickedTail.y);
+        minY = Math.min(this.firstClickedTail.y, this.secondClickedTail.y);
+        this.findGroups(minY, maxY - minY +1, minX, maxX - minX +1);
     }
 
 };
