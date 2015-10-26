@@ -4,6 +4,9 @@ function Game () {
     this.width = 0;
     this.height = 0;
     this.numberOfColors = 0;
+    this.isFirstClick = true;
+    this.firstClickedTail = {};
+    this.secondClickedTail = {};
 }
 
 Game.prototype.start = function(width, height, numberOfColors) {
@@ -116,6 +119,55 @@ Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOf
             if (hasGroups) {
                 return true;
             }
+        }
+    }
+};
+
+Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
+
+    if (this.isFirstClick) {
+        this.firstClickedTail.x = mousePositionX;
+        this.firstClickedTail.y = mousePositionY;
+        this.isFirstClick = false;
+
+    }   else {
+        this.secondClickedTail.x = mousePositionX;
+        this.secondClickedTail.y = mousePositionY;
+        this.isFirstClick = true;
+    }
+    if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTail.x, this.firstClickedTail.y,
+        this.secondClickedTail.x, this.secondClickedTail.y))) {
+        this.swap(this.firstClickedTail.x, this.firstClickedTail.y, this.secondClickedTail.x, this.secondClickedTail.y);
+        game.drawer.drawField(this.modelArr);
+    }
+
+};
+
+Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
+    var neighbors = [
+        {
+            x : 0,
+            y : -1
+        },
+        {
+            x : 0,
+            y : 1
+        },
+        {
+            x : 1,
+            y : 0
+        },
+        {
+            x : -1,
+            y : 0
+        }
+        ],
+        obj,
+        neighborsLength = neighbors.length;
+    for (var i = 0; i < neighborsLength; i++) {
+        obj = neighbors[i];
+        if (obj.x + x1 == x2 && obj.y + y1 == y2) {
+            return true;
         }
     }
 };

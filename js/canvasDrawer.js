@@ -24,4 +24,9 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
             ctx.fillRect(i*cellSize + 1, j*cellSize + 1, cellSize - 1, cellSize - 1);
         }
     }
+    this.canvasField.onclick = function(e) {
+        var mousePositionX = Math.floor(e.offsetX/cellSize),
+            mousePositionY = Math.floor(e.offsetY/cellSize);
+        game.onCellClick(mousePositionX, mousePositionY);
+    };
 };
