@@ -7,13 +7,14 @@ function Game () {
     this.isFirstClick = true;
     this.firstClickedTail = {};
     this.secondClickedTail = {};
+    this.groups = [];
 }
 
 Game.prototype.start = function(width, height, numberOfColors) {
     var currentColor,
         tiles,
-        startRow = 0,
         hasGroups, hasMove,
+        startRow = 0,
         startColumn = 0;
 
     this.modelArr = [];
@@ -31,6 +32,7 @@ Game.prototype.start = function(width, height, numberOfColors) {
     }
     hasGroups = this.findGroups(startRow, this.height - 1, startColumn, this.width - 1);
     hasMove = this.hasMove(startRow, this.height - 1, startColumn, this.width - 1);
+    this.groups = [];
 
     console.log(hasGroups);
     if (hasGroups || !hasMove) {
@@ -40,7 +42,7 @@ Game.prototype.start = function(width, height, numberOfColors) {
 
 Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numberOfColumns) {
     var numberOfMatches = 0,
-        groups = [],
+        //groups = [],
         startPositionOfMatches = {},
         finishPositionOfMatches = {};
     //find horizontal groups
@@ -53,11 +55,11 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
                     startPositionOfMatches.x = finishPositionOfMatches.x - numberOfMatches;
                     startPositionOfMatches.y = finishPositionOfMatches.y = i;
                     if (numberOfMatches > 2) {
-                        groups.pop();
+                        this.groups.pop();
                     }
-                    groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
+                    this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
-                    console.log(groups);
+                  //  console.log(this.groups);
                 }
             }   else {
                 numberOfMatches = 0;
@@ -75,11 +77,11 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
                     startPositionOfMatches.y = finishPositionOfMatches.y - numberOfMatches;
                     startPositionOfMatches.x = finishPositionOfMatches.x = j;
                     if (numberOfMatches > 2) {
-                        groups.pop();
+                        this.groups.pop();
                     }
-                    groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
+                    this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
-                    console.log(groups);
+                   // console.log(this.groups);
                 }
             }   else {
                 numberOfMatches = 0;
@@ -87,7 +89,7 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
         }
         numberOfMatches = 0;
     }
-    return groups.length;
+    return this.groups.length;
 };
 
 Game.prototype.swap = function (x1, y1, x2, y2 ) {
@@ -145,9 +147,12 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
         minX = Math.min(this.firstClickedTail.x, this.secondClickedTail.x);
         maxY = Math.max(this.firstClickedTail.y, this.secondClickedTail.y);
         minY = Math.min(this.firstClickedTail.y, this.secondClickedTail.y);
-        this.findGroups(minY, maxY - minY +1, minX, maxX - minX +1);
-    }
 
+        this.findGroups(minY, maxY, 0, this.width - 1);
+        this.findGroups(0, this.height - 1, minX, maxX);
+        console.log(this.groups);
+       // this.findGroups(0, this.height - 1, 0, this.width -1);
+    }
 };
 
 Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
