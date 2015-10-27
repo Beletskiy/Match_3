@@ -148,11 +148,54 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
         maxY = Math.max(this.firstClickedTail.y, this.secondClickedTail.y);
         minY = Math.min(this.firstClickedTail.y, this.secondClickedTail.y);
 
-        this.findGroups(minY, maxY, 0, this.width - 1);
-        this.findGroups(0, this.height - 1, minX, maxX);
+        this.findGroups(minY, maxY, 0, this.width - 1); //find horizontal groups
+        this.findGroups(0, this.height - 1, minX, maxX); // find vertical groups
         console.log(this.groups);
-       // this.findGroups(0, this.height - 1, 0, this.width -1);
+        this.removeGroup(this.groups);
     }
+};
+
+Game.prototype.removeGroup = function (groups) {
+    var groupLength = groups.length;
+    for (var i = 0; i < groupLength; i++) {
+        console.log(this.groups[i]);
+        for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
+            for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
+                this.modelArr[j][k].color = 8;
+                game.drawer.drawField(this.modelArr);
+            }
+        }
+    }
+    this.shiftGroup(this.groups);
+};
+
+Game.prototype.shiftGroup = function (groups) {
+    var groupLength = groups.length;
+    for (var i = 0; i < groupLength; i++) {
+
+        for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
+            for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
+
+                if (this.groups[i].startY == this.groups[i].finishY) {  //horizontal group
+                   // if (k > 0) {
+                        this.swap(j, k, j, k - 1);
+                        game.drawer.drawField(this.modelArr);
+                    /*}   /*else {
+                        this.modelArr[j][0].color = Math.floor(Math.random()*this.numberOfColors);
+                        game.drawer.drawField(this.modelArr);
+                    } */
+                } else {
+                    this.swap(j, k, j , k );
+                    game.drawer.drawField(this.modelArr);
+                }
+
+            }
+        }
+        this.groups.shift();
+        this.findGroups(0, this.height - 1, 0, this.width -1); // оптимизировть
+        this.removeGroup(this.groups);
+    }
+
 };
 
 Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
@@ -185,6 +228,6 @@ Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
 };
 
 game = new Game();
-game.start(10,5,8);
+game.start(10,7,8);
 game.drawer.drawField(game.modelArr);
 

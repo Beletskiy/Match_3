@@ -1,6 +1,6 @@
 function CanvasDrawer () {
     this.cellSize = 40;
-    this.colors = ['red', 'orange', 'yellow', 'green', 'aqua', 'blue', 'purple', 'silver'];
+    this.colors = ['red', 'orange', 'yellow', 'green', 'aqua', 'blue', 'purple', 'silver', 'white'];
     this.canvasField = document.getElementById("canvasGameField");
     this.ctx = this.canvasField.getContext('2d');
 }
@@ -12,6 +12,8 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
         width = canvasArr.length,
         height = canvasArr[0].length,
         colorOfTile,
+        mousePositionX,
+        mousePositionY,
         offset = 0.5;
 
     this.canvasField.width = cellSize*width + offset*2;
@@ -25,8 +27,8 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
         }
     }
     this.canvasField.onclick = function(e) {
-        var mousePositionX = Math.floor(e.offsetX/cellSize),
-            mousePositionY = Math.floor(e.offsetY/cellSize);
+        mousePositionX = Math.floor(e.offsetX/cellSize);
+        mousePositionY = Math.floor(e.offsetY/cellSize);
         game.onCellClick(mousePositionX, mousePositionY);
     };
 };
