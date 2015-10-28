@@ -40,14 +40,38 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr) {
         shiftY = y2 - y1,
         color1 = this.colors[modelArr[x1][y1].color],
         color2 = this.colors[modelArr[x2][y2].color];
-    ctx.clearRect(x1*this.cellSize, y1*this.cellSize, this.cellSize, this.cellSize);
-    ctx.clearRect(x2*this.cellSize, y2*this.cellSize, this.cellSize, this.cellSize);
+    var animateS = function() {
+        console.log("call animate");
+      //  while ((Math.abs(shiftX) < cellSize) && (Math.abs(shiftY) < cellSize)) {
 
-    ctx.beginPath();//
-    ctx.fillStyle = color1;
-    ctx.fillRect(x1*cellSize+1 + shiftX, y1*cellSize+1 + shiftY, cellSize - 1, cellSize - 1);
-    ctx.fillStyle = color2;
-    ctx.fillRect(x2*cellSize+1 - shiftX, y2*cellSize+1 - shiftY, cellSize - 1, cellSize - 1);
+            ctx.clearRect(x1 * cellSize  + shiftX, y1 * cellSize + shiftY, cellSize -1 , cellSize - 1);
+            ctx.clearRect(x2 * cellSize  - shiftX, y2 * cellSize - shiftY, cellSize - 1, cellSize - 1);
 
-    setTimeout(this.animateSwap(), 20);
+            ctx.fillStyle = color2;
+            ctx.fillRect(x1 * cellSize + 1 + shiftX, y1 * cellSize + 1 + shiftY, cellSize - 1, cellSize - 1);
+            ctx.fillStyle = color1;
+            ctx.fillRect(x2 * cellSize + 1 - shiftX, y2 * cellSize + 1 - shiftY, cellSize - 1, cellSize - 1);
+
+            if (shiftX > 0) { // оптимизировать
+                shiftX++;
+            }
+            else if (shiftX < 0) {
+                shiftX--;
+            }
+            else if (shiftY > 0) {
+                shiftY++;
+            }
+            else if (shiftY < 0) {
+                shiftY--;
+            }
+           var timer =  setTimeout(animateS, 15);
+        if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
+            clearTimeout(timer);
+        }
+       // }
+       // setTimeout(animateS, 200);
+    };
+    //setInterval(animateS, 20);
+    animateS();
+
 };
