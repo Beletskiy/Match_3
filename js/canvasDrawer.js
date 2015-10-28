@@ -33,7 +33,7 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
     };
 };
 
-CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr) {
+CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callback) {
     var ctx = this.ctx,
         cellSize = this.cellSize,
         shiftX = x2 - x1,
@@ -70,4 +70,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr) {
         }
     };
     animateS();
+    if (callback) {
+        callback();
+    }
 };

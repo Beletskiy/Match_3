@@ -141,19 +141,29 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
     }
     if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTail.x, this.firstClickedTail.y,
         this.secondClickedTail.x, this.secondClickedTail.y))) {
+        var fcx = this.firstClickedTail.x,
+            fcy = this.firstClickedTail.y,
+            scx = this.secondClickedTail.x,
+            scy = this.secondClickedTail.y,
+            self = this;
         this.swap(this.firstClickedTail.x, this.firstClickedTail.y, this.secondClickedTail.x, this.secondClickedTail.y);
         game.drawer.animateSwap(this.firstClickedTail.x, this.firstClickedTail.y,
-            this.secondClickedTail.x, this.secondClickedTail.y, this.modelArr);
-        //game.drawer.drawField(this.modelArr);
-        maxX = Math.max(this.firstClickedTail.x, this.secondClickedTail.x);
-        minX = Math.min(this.firstClickedTail.x, this.secondClickedTail.x);
-        maxY = Math.max(this.firstClickedTail.y, this.secondClickedTail.y);
-        minY = Math.min(this.firstClickedTail.y, this.secondClickedTail.y);
+            this.secondClickedTail.x, this.secondClickedTail.y, this.modelArr, function() {
 
-        this.findGroups(minY, maxY, 0, this.width - 1); //find horizontal groups
-        this.findGroups(0, this.height - 1, minX, maxX); // find vertical groups
-        console.log(this.groups);
-        this.removeGroup(this.groups);
+                console.log(fcx);
+                console.log(self.width);
+                maxX = Math.max(fcx, scx);
+                minX = Math.min(fcx, scx);
+                maxY = Math.max(fcy, scy);
+                minY = Math.min(fcy, scy);
+
+                self.findGroups(minY, maxY, 0, self.width - 1); //find horizontal groups
+                self.findGroups(0, self.height - 1, minX, maxX); // find vertical groups
+                //console.log(this.groups);
+                self.removeGroup(self.groups);
+
+            });
+        //game.drawer.drawField(this.modelArr);
     }
 };
 
