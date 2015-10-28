@@ -147,11 +147,10 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
             scy = this.secondClickedTail.y,
             self = this;
         this.swap(this.firstClickedTail.x, this.firstClickedTail.y, this.secondClickedTail.x, this.secondClickedTail.y);
+
         game.drawer.animateSwap(this.firstClickedTail.x, this.firstClickedTail.y,
             this.secondClickedTail.x, this.secondClickedTail.y, this.modelArr, function() {
 
-                console.log(fcx);
-                console.log(self.width);
                 maxX = Math.max(fcx, scx);
                 minX = Math.min(fcx, scx);
                 maxY = Math.max(fcy, scy);

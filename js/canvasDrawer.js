@@ -67,10 +67,11 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
            var timer =  setTimeout(animateS, 20);
         if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
             clearTimeout(timer);
+            if (callback) {
+                callback();
+            }
         }
     };
     animateS();
-    if (callback) {
-        callback();
-    }
+
 };
