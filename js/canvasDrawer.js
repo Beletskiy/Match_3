@@ -40,12 +40,12 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr) {
         shiftY = y2 - y1,
         color1 = this.colors[modelArr[x1][y1].color],
         color2 = this.colors[modelArr[x2][y2].color];
+        //ctx.clearRect(Math.min(x1, x2), Math.max(y1, y2),cellSize, cellSize);
     var animateS = function() {
         console.log("call animate");
-      //  while ((Math.abs(shiftX) < cellSize) && (Math.abs(shiftY) < cellSize)) {
 
-            ctx.clearRect(x1 * cellSize  + shiftX, y1 * cellSize + shiftY, cellSize -1 , cellSize - 1);
-            ctx.clearRect(x2 * cellSize  - shiftX, y2 * cellSize - shiftY, cellSize - 1, cellSize - 1);
+           // ctx.clearRect(x1 * cellSize  + shiftX , y1 * cellSize + shiftY , cellSize , cellSize);
+           // ctx.clearRect(x2 * cellSize  - shiftX, y2 * cellSize - shiftY, cellSize , cellSize);
 
             ctx.fillStyle = color2;
             ctx.fillRect(x1 * cellSize + 1 + shiftX, y1 * cellSize + 1 + shiftY, cellSize - 1, cellSize - 1);
@@ -64,14 +64,10 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr) {
             else if (shiftY < 0) {
                 shiftY--;
             }
-           var timer =  setTimeout(animateS, 15);
+           var timer =  setTimeout(animateS, 20);
         if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
             clearTimeout(timer);
         }
-       // }
-       // setTimeout(animateS, 200);
     };
-    //setInterval(animateS, 20);
     animateS();
-
 };

@@ -181,7 +181,9 @@ Game.prototype.shiftGroup = function (groups) {
                 if (this.groups[i].startY == this.groups[i].finishY) {  //horizontal group
                    // if (k > 0) {
                         this.swap(j, k, j, k - 1);
-                        game.drawer.drawField(this.modelArr);
+
+                        //game.drawer.drawField(this.modelArr);
+                    game.drawer.animateSwap(j, k, j, k - 1, this.modelArr);
                     /*}   /*else {
                         this.modelArr[j][0].color = Math.floor(Math.random()*this.numberOfColors);
                         game.drawer.drawField(this.modelArr);
