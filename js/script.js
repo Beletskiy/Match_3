@@ -142,6 +142,8 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
     if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTail.x, this.firstClickedTail.y,
         this.secondClickedTail.x, this.secondClickedTail.y))) {
         this.swap(this.firstClickedTail.x, this.firstClickedTail.y, this.secondClickedTail.x, this.secondClickedTail.y);
+        game.drawer.animateSwap(this.firstClickedTail.x, this.firstClickedTail.y,
+            this.secondClickedTail.x, this.secondClickedTail.y, this.modelArr);
         game.drawer.drawField(this.modelArr);
         maxX = Math.max(this.firstClickedTail.x, this.secondClickedTail.x);
         minX = Math.min(this.firstClickedTail.x, this.secondClickedTail.x);
