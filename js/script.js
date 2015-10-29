@@ -40,13 +40,13 @@ Game.prototype.start = function(width, height, numberOfColors) {
     }
 };
 
-Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numberOfColumns) {
+Game.prototype.findGroups = function (startRow, finishRow, startColumn, finishColumn) {
     var numberOfMatches = 0,
         startPositionOfMatches = {},
         finishPositionOfMatches = {};
     //find horizontal groups
-    for (var i = startRow; i <= numberOfRows; i++) {
-        for (var j = startColumn; j < numberOfColumns ; j++) {
+    for (var i = startRow; i <= finishRow; i++) {
+        for (var j = startColumn; j < finishColumn ; j++) {
             if (this.modelArr[j][i].color == this.modelArr[j+1][i].color) {
                 numberOfMatches++;
                 if (numberOfMatches >= 2) {
@@ -66,8 +66,8 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
         numberOfMatches = 0;
     }
     //find vertical groups
-    for (j = startColumn; j <= numberOfColumns; j++) {
-        for (i = startRow; i < numberOfRows ; i++) {
+    for (j = startColumn; j <= finishColumn; j++) {
+        for (i = startRow; i < finishRow ; i++) {
             if (this.modelArr[j][i].color == this.modelArr[j][i + 1].color) {
                 numberOfMatches++;
                 if (numberOfMatches >= 2) {
@@ -170,27 +170,29 @@ Game.prototype.removeGroup = function (groups) {
                 //game.drawer.drawField(this.modelArr);
             }
         }
+        //this.shiftGroup(this.groups[i]);
+        this.shiftGroup(i);
     }
-    this.shiftGroup(this.groups);
+   // this.shiftGroup(this.groups);
 };
 
-Game.prototype.shiftGroup = function (groups) {
-    var groupLength = groups.length;
-    for (var i = 0; i < groupLength; i++) {
+Game.prototype.shiftGroup = function (i) {
+  //  var groupLength = groups.length;
+  //  for (var i = 0; i < groupLength; i++) {
 
         for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
             for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
 
-                if (this.groups[i].startY == this.groups[i].finishY) {  //horizontal group
-                   // if (k > 0) {
-                        this.swap(j, k, j, k - 1);
+                if (this.groups[i].startY == this.groups[i].finishY) {//horizontal group
 
-                    game.drawer.animateSwap(j, k, j, k - 1, this.modelArr);
-                    /*}   /*else {
-                        this.modelArr[j][0].color = Math.floor(Math.random()*this.numberOfColors);
-                        game.drawer.drawField(this.modelArr);
-                    } */
-                } else {
+                  //  if (k > 0) {
+                        this.swap(j, k, j, k - 1);
+                        game.drawer.animateSwap(j, k, j, k - 1, this.modelArr);
+                   // } else {
+                       // this.randomGenerateColorsForGroup(this.groups[i]);
+                   // }
+
+                } else {  //vertical group
                     //this.swap(j, k, j , k );
                     //game.drawer.drawField(this.modelArr);
                 }
@@ -200,8 +202,15 @@ Game.prototype.shiftGroup = function (groups) {
         this.groups.shift();
         this.findGroups(0, this.height - 1, 0, this.width -1); // оптимизировть
         this.removeGroup(this.groups);
-    }
+//    }
+};
 
+Game.prototype.randomGenerateColorsForGroup = function (group) {
+    for (var j = group.startX; j <= group.finishX; j++) {
+        for (var i = group.startY; i <= group.finishY; i++) {
+            this.modelArr[j][i].color =  Math.floor(Math.random()*this.numberOfColors);
+        }
+    }
 };
 
 Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
