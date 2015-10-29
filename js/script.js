@@ -42,7 +42,6 @@ Game.prototype.start = function(width, height, numberOfColors) {
 
 Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numberOfColumns) {
     var numberOfMatches = 0,
-        //groups = [],
         startPositionOfMatches = {},
         finishPositionOfMatches = {};
     //find horizontal groups
@@ -59,7 +58,6 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
                     }
                     this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
-                  //  console.log(this.groups);
                 }
             }   else {
                 numberOfMatches = 0;
@@ -81,7 +79,6 @@ Game.prototype.findGroups = function (startRow, numberOfRows, startColumn, numbe
                     }
                     this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
-                   // console.log(this.groups);
                 }
             }   else {
                 numberOfMatches = 0;
@@ -141,15 +138,15 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
     }
     if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTail.x, this.firstClickedTail.y,
         this.secondClickedTail.x, this.secondClickedTail.y))) {
+
         var fcx = this.firstClickedTail.x,
             fcy = this.firstClickedTail.y,
             scx = this.secondClickedTail.x,
             scy = this.secondClickedTail.y,
             self = this;
-        this.swap(this.firstClickedTail.x, this.firstClickedTail.y, this.secondClickedTail.x, this.secondClickedTail.y);
+        this.swap(fcx, fcy, scx, scy);
 
-        game.drawer.animateSwap(this.firstClickedTail.x, this.firstClickedTail.y,
-            this.secondClickedTail.x, this.secondClickedTail.y, this.modelArr, function() {
+        game.drawer.animateSwap(fcx, fcy, scx, scy, this.modelArr, function() {
 
                 maxX = Math.max(fcx, scx);
                 minX = Math.min(fcx, scx);
@@ -158,11 +155,8 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
 
                 self.findGroups(minY, maxY, 0, self.width - 1); //find horizontal groups
                 self.findGroups(0, self.height - 1, minX, maxX); // find vertical groups
-                //console.log(this.groups);
                 self.removeGroup(self.groups);
-
             });
-        //game.drawer.drawField(this.modelArr);
     }
 };
 
@@ -173,7 +167,7 @@ Game.prototype.removeGroup = function (groups) {
         for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
             for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
                 this.modelArr[j][k].color = 8;
-                game.drawer.drawField(this.modelArr);
+                //game.drawer.drawField(this.modelArr);
             }
         }
     }
@@ -191,15 +185,14 @@ Game.prototype.shiftGroup = function (groups) {
                    // if (k > 0) {
                         this.swap(j, k, j, k - 1);
 
-                        //game.drawer.drawField(this.modelArr);
                     game.drawer.animateSwap(j, k, j, k - 1, this.modelArr);
                     /*}   /*else {
                         this.modelArr[j][0].color = Math.floor(Math.random()*this.numberOfColors);
                         game.drawer.drawField(this.modelArr);
                     } */
                 } else {
-                    this.swap(j, k, j , k );
-                    game.drawer.drawField(this.modelArr);
+                    //this.swap(j, k, j , k );
+                    //game.drawer.drawField(this.modelArr);
                 }
 
             }
