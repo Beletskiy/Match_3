@@ -59,7 +59,9 @@ Game.prototype.findGroups = function (startRow, finishRow, startColumn, finishCo
                     this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
                 }
-            }   else {
+            }  else if (this.groups.length > 0) {
+                return this.groups.length;
+            } else {
                 numberOfMatches = 0;
             }
         }
@@ -80,12 +82,15 @@ Game.prototype.findGroups = function (startRow, finishRow, startColumn, finishCo
                     this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
                         finishX: finishPositionOfMatches.x, finishY: finishPositionOfMatches.y });
                 }
+            }    else if (this.groups.length > 0) {
+                return this.groups.length;
             }   else {
                 numberOfMatches = 0;
             }
         }
         numberOfMatches = 0;
     }
+    console.log(this.groups);
     return this.groups.length;
 };
 
@@ -179,15 +184,28 @@ Game.prototype.removeGroup = function (groups) {
 Game.prototype.shiftGroup = function (i) {
   //  var groupLength = groups.length;
   //  for (var i = 0; i < groupLength; i++) {
+    var self = this;
 
         for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
             for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
 
+                if (k == 0) {
+                    console.log("k = 0");
+                    this.randomGenerateColorsForGroup(this.groups[i]);
+                    //game.drawer.drawField(this.modelArr);
+                   // this.findGroups(0, this.height - 1, 0, this.width -1); // оптимизировть
+                   // this.removeGroup(this.groups);
+                    //return false;
+                }
+
                 if (this.groups[i].startY == this.groups[i].finishY) {//horizontal group
 
                   //  if (k > 0) {
+
                         this.swap(j, k, j, k - 1);
-                        game.drawer.animateSwap(j, k, j, k - 1, this.modelArr);
+                        game.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function(){
+                            game.drawer.drawField(self.modelArr);
+                        });
                    // } else {
                        // this.randomGenerateColorsForGroup(this.groups[i]);
                    // }
@@ -196,10 +214,9 @@ Game.prototype.shiftGroup = function (i) {
                     //this.swap(j, k, j , k );
                     //game.drawer.drawField(this.modelArr);
                 }
-
             }
         }
-        this.groups.shift();
+        this.groups.pop();
         this.findGroups(0, this.height - 1, 0, this.width -1); // оптимизировть
         this.removeGroup(this.groups);
 //    }
@@ -209,8 +226,10 @@ Game.prototype.randomGenerateColorsForGroup = function (group) {
     for (var j = group.startX; j <= group.finishX; j++) {
         for (var i = group.startY; i <= group.finishY; i++) {
             this.modelArr[j][i].color =  Math.floor(Math.random()*this.numberOfColors);
+            console.log("rand colors");
         }
     }
+   // game.drawer.drawField(this.modelArr);
 };
 
 Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
@@ -243,6 +262,6 @@ Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
 };
 
 game = new Game();
-game.start(10,7,8);
+game.start(10,7,4);
 game.drawer.drawField(game.modelArr);
 
