@@ -30,17 +30,16 @@ Game.prototype.start = function(width, height, numberOfColors) {
         }
         this.modelArr.push(tiles);
     }
-    hasGroups = this.findGroups(startRow, this.height - 1, startColumn, this.width - 1);
+    hasGroups = this.findGroup(startRow, this.height - 1, startColumn, this.width - 1);
     hasMove = this.hasMove(startRow, this.height - 1, startColumn, this.width - 1);
     this.groups = [];
-
-    console.log(hasGroups);
+    //console.log(hasGroups);
     if (hasGroups || !hasMove) {
         this.start(width, height, numberOfColors);
     }
 };
 
-Game.prototype.findGroups = function (startRow, finishRow, startColumn, finishColumn) {
+Game.prototype.findGroup = function (startRow, finishRow, startColumn, finishColumn) {
     var numberOfMatches = 0,
         startPositionOfMatches = {},
         finishPositionOfMatches = {};
@@ -90,7 +89,7 @@ Game.prototype.findGroups = function (startRow, finishRow, startColumn, finishCo
         }
         numberOfMatches = 0;
     }
-    console.log(this.groups);
+    //console.log(this.groups);
     return this.groups.length;
 };
 
@@ -107,7 +106,7 @@ Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOf
     for (var j = startRow; j < numberOfRows; j++) {
         for (var i = startColumn; i < numberOfColumns - 1; i++) {
             this.swap(i, j, i + 1, j);
-            hasGroups = this.findGroups(startRow, numberOfRows, startColumn, numberOfColumns);
+            hasGroups = this.findGroup(startRow, numberOfRows, startColumn, numberOfColumns);
             this.swap(i, j, i + 1, j);
             if (hasGroups) {
                 return true;
@@ -118,7 +117,7 @@ Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOf
     for (i = startColumn; i < numberOfColumns; i++) {
         for (j = startRow; j < numberOfRows - 1; j++) {
             this.swap(i, j, i , j + 1);
-            hasGroups = this.findGroups(startRow, numberOfRows, startColumn, numberOfColumns);
+            hasGroups = this.findGroup(startRow, numberOfRows, startColumn, numberOfColumns);
             this.swap(i, j, i , j + 1);
             if (hasGroups) {
                 return true;
@@ -158,62 +157,75 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
                 maxY = Math.max(fcy, scy);
                 minY = Math.min(fcy, scy);
 
-                self.findGroups(minY, maxY, 0, self.width - 1); //find horizontal group
-                self.findGroups(0, self.height - 1, minX, maxX); // find vertical group
-                self.removeGroup(self.groups);
+                self.findGroup(minY, maxY, 0, self.width - 1); //find horizontal group
+                self.findGroup(0, self.height - 1, minX, maxX); // find vertical group
+                self.removeGroup();
             });
     }
 };
 
-Game.prototype.removeGroup = function (groups) {
-    var groupLength = groups.length;
-    for (var i = 0; i < groupLength; i++) {
-        console.log(this.groups[i]);
-        for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
-            for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
+Game.prototype.removeGroup = function () {
+   // var groupLength = groups.length;
+   // for (var i = 0; i < groupLength; i++) {
+        //console.log(this.groups[i]);
+        for (var j = this.groups[0].startX; j <= this.groups[0].finishX; j++) {
+            for (var k = this.groups[0].startY; k <= this.groups[0].finishY; k++) {
                 this.modelArr[j][k].color = 8;
             }
         }
-        this.shiftGroup(i);
-    }
+        this.shiftGroup(0);
+ //   }
 };
 
 Game.prototype.shiftGroup = function (i) {
-  //  var groupLength = groups.length;
-  //  for (var i = 0; i < groupLength; i++) {
-    var self = this;
+
+    var self = this,
+        startRow,
+        finishRow,
+        startColumn,
+        finishColumn;
 
         for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
             for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
 
                 if (k == 0) {
                     console.log("k = 0");
-                    this.randomGenerateColorsForGroup(this.groups[i]);+
-                    this.findGroups(0, this.height - 1, 0, this.width -1); // оптимизировть
-                    console.log(this.groups);
-                    if (this.groups.length > 0) {
-                        this.removeGroup(this.groups);
-                    }
+                    this.randomGenerateColorsForGroup(this.groups[i]);
                 }
 
                 if (this.groups[i].startY == this.groups[i].finishY) {                 //horizontal group
 
                         this.swap(j, k, j, k - 1);
-                        game.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function(){
-                            game.drawer.drawField(self.modelArr); //  or redraw only need tails
+                        game.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function(){ //need special animation
+
+                            game.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
+                            self.findGroup(0, self.height - 1, 0, self.width -1);
+                            if (self.groups.length > 0) {
+                                self.removeGroup(self.groups);
+                             }
                         });
+                        startRow = this.groups[i].startY - 1;
+                        finishRow = this.groups[i].finishY - 1;
+                        startColumn = this.groups[i].startX;
+                        finishColumn = this.groups[i].finishX;
 
                 } else if (this.groups[i].startX == this.groups[i].finishX) {          //vertical group
                     var groupLength = this.groups[i].finishY - this.groups[i].startY + 1;
                     this.swap(j, k, j , k - groupLength );
                     game.drawer.animateSwap(j, k, j , k - groupLength , this.modelArr, function(){
-                        game.drawer.drawField(self.modelArr); //  or redraw only need tails
+
+                        game.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
+                        self.findGroup(0, self.height - 1, 0, self.width -1);
+                        if (self.groups.length > 0) {
+                            self.removeGroup(self.groups);
+                        }
                     });
                 }
             }
         }
-        this.groups.pop();
-        this.findGroups(0, this.height - 1, 0, this.width -1); // оптимизировть
+
+    this.groups.pop();
+    this.groups.push({startX: startColumn, startY: startRow, finishX: finishColumn, finishY: finishRow });
         this.removeGroup(this.groups);
 };
 
@@ -258,6 +270,6 @@ Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
 };
 
 game = new Game();
-game.start(10,6,5);
+game.start(10,6,4);
 game.drawer.drawField(game.modelArr);
 
