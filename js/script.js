@@ -194,54 +194,13 @@ Game.prototype.shiftGroup = function (i) {
         startColumn,
         finishColumn;
 
-    /*    for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
-            for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
-
-                if (k == 0) {
-                    console.log("k = 0");
-                    this.randomGenerateColorsForGroup(this.groups[i]);
-                }
-
-                if (this.groups[i].startY == this.groups[i].finishY) {                 //if horizontal group
-
-                        this.swap(j, k, j, k - 1);
-                        game.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function(){ //need special animation
-
-                            game.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
-                            self.findGroup(0, self.height - 1, 0, self.width -1);
-                            if (self.groups.length > 0) {
-                                self.removeGroup(self.groups);
-                             }
-                        });
-                        startRow = this.groups[i].startY - 1;
-                        finishRow = this.groups[i].finishY - 1;
-                        startColumn = this.groups[i].startX;
-                        finishColumn = this.groups[i].finishX;
-
-                } else if (this.groups[i].startX == this.groups[i].finishX) {          //if vertical group
-                    var groupLength = this.groups[i].finishY - this.groups[i].startY + 1;
-                    if ((k - groupLength) < 0) {
-
-                    }
-                    this.swap(j, k, j , k - groupLength );
-                    game.drawer.animateSwap(j, k, j , k - groupLength , this.modelArr, function(){
-
-                        game.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
-                        self.findGroup(0, self.height - 1, 0, self.width -1);
-                        if (self.groups.length > 0) {
-                            self.removeGroup(self.groups);
-                        }
-                    });
-                }
-            }
-        } */
-    if (this.groups[i].startY == this.groups[i].finishY) {                             //if horizontal group
-        var k = this.groups[i].startY;
+    if (activeGroup.startY == activeGroup.finishY) {                             //if horizontal group
+        var k = activeGroup.startY;
         if (k == 0) {
-            this.randomGenerateColorsForGroup(this.groups[i]);
+            this.randomGenerateColorsForGroup(activeGroup);
             return;
         }
-        for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
+        for (var j = activeGroup.startX; j <= activeGroup.finishX; j++) {
 
             this.swap(j, k, j, k - 1);
             this.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function () { //need special animation
@@ -251,33 +210,34 @@ Game.prototype.shiftGroup = function (i) {
                 self.removeGroup(self.groups);
             });
         }
-        startRow = this.groups[i].startY - 1;
-        finishRow = this.groups[i].finishY - 1;
-        startColumn = this.groups[i].startX;
-        finishColumn = this.groups[i].finishX;
+        startRow = activeGroup.startY - 1;
+        finishRow = activeGroup.finishY - 1;
+        startColumn = activeGroup.startX;
+        finishColumn = activeGroup.finishX;
     }
 
-    if (this.groups[i].startX == this.groups[i].finishX) {                                 //if vertical group
+    if (activeGroup.startX == activeGroup.finishX) {                                 //if vertical group
 
-        groupLength = this.groups[i].finishY - this.groups[i].startY + 1;
-        j = this.groups[i].startX;
-        for ( k = this.groups[i].finishY; k >= this.groups[i].startY; k--) {
+        groupLength = activeGroup.finishY - activeGroup.startY + 1;
+        j = activeGroup.startX;
+        for ( k = activeGroup.finishY; k >= activeGroup.startY; k--) {
 
             if ((k - groupLength) < 0) {
-                this.randomGenerateColorsForGroup(this.groups[i]);
+                this.randomGenerateColorsForGroup(activeGroup);
+                return;
             }
             this.swap(j, k, j, k - groupLength);
-            game.drawer.animateSwap(j, k, j, k - groupLength, this.modelArr, function () {
+            this.drawer.animateSwap(j, k, j, k - groupLength, this.modelArr, function () {
 
                 self.drawer.drawField(self.modelArr); //  or redraw only need tiles, organize fall new group from top
                 self.findGroup(0, self.height - 1, 0, self.width - 1);
                 self.removeGroup(self.groups);
             });
         }
-        startRow = this.groups[i].startY - groupLength;
-        finishRow = this.groups[i].finishY - groupLength;
-        startColumn = this.groups[i].startX;
-        finishColumn = this.groups[i].finishX;
+        startRow = activeGroup.startY - groupLength;
+        finishRow = activeGroup.finishY - groupLength;
+        startColumn = activeGroup.startX;
+        finishColumn = activeGroup.finishX;
     }
 
     this.groups.pop();
@@ -289,7 +249,6 @@ Game.prototype.randomGenerateColorsForGroup = function (group) {
     for (var j = group.startX; j <= group.finishX; j++) {
         for (var i = group.startY; i <= group.finishY; i++) {
             this.modelArr[j][i].color = Math.floor(Math.random()*this.numberOfColors);
-            console.log("rand color");
         }
     }
     this.groups.pop(); // todo WTF?
@@ -300,36 +259,11 @@ Game.prototype.isNeighbors = function (tile1, tile2) {
     var x1 = tile1.x,
         y1 = tile1.y,
         x2 = tile2.x,
-        y2 = tile2.y,
-        neighbors = [
-        {
-            x : 0,
-            y : -1
-        },
-        {
-            x : 0,
-            y : 1
-        },
-        {
-            x : 1,
-            y : 0
-        },
-        {
-            x : -1,
-            y : 0
-        }
-        ],
-        obj,
-        neighborsLength = neighbors.length;
-    for (var i = 0; i < neighborsLength; i++) {
-        obj = neighbors[i];
-        if (obj.x + x1 == x2 && obj.y + y1 == y2) {
-            return true;
-        }
-    }
+        y2 = tile2.y;
+    return (Math.abs(x1 - x2) + Math.abs(y1 - y2) == 1);
 };
 
 game = new Game();
-game.start(10,6,4);
+game.start(10,7,4);
 game.drawer.drawField(game.modelArr);
 
