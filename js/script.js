@@ -1,14 +1,18 @@
 function Game () {
     this.drawer = new CanvasDrawer();
-    this.modelArr = null;
+    this.modelArr = [];
     this.width = 0;
     this.height = 0;
     this.numberOfColors = 0;
     this.isFirstClick = true;
-    this.firstClickedTail = {};
-    this.secondClickedTail = {};
+    this.firstClickedTile = {};
+    this.secondClickedTile = {};
     this.groups = [];
 }
+
+Game.prototype.VALUES = {
+    EMPTY : 8,
+};
 
 Game.prototype.start = function(width, height, numberOfColors) {
     var currentColor,
@@ -17,10 +21,10 @@ Game.prototype.start = function(width, height, numberOfColors) {
         startRow = 0,
         startColumn = 0;
 
-    this.modelArr = [];
     this.width = width;
     this.height = height;
     this.numberOfColors = numberOfColors;
+    this.modelArr = [];
 
     for (var i = 0; i < this.width; i++) {
         tiles = [];
@@ -101,6 +105,8 @@ Game.prototype.swap = function (x1, y1, x2, y2 ) {
 
 Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOfColumns) {
 
+    // todo resolve this with potential groups
+
     var hasGroups = 0;
     // Check horizontal swaps
     for (var j = startRow; j < numberOfRows; j++) {
@@ -130,27 +136,28 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
     var maxX, maxY,
         minX, minY;
 
+    var fcx, fcy, scx, scy,
+        self = this;
+
     if (this.isFirstClick) {
-        this.firstClickedTail.x = mousePositionX;
-        this.firstClickedTail.y = mousePositionY;
+        this.firstClickedTile.x = mousePositionX;
+        this.firstClickedTile.y = mousePositionY;
         this.isFirstClick = false;
 
-    }   else {
-        this.secondClickedTail.x = mousePositionX;
-        this.secondClickedTail.y = mousePositionY;
+    } else {
+        this.secondClickedTile.x = mousePositionX;
+        this.secondClickedTile.y = mousePositionY;
         this.isFirstClick = true;
     }
-    if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTail.x, this.firstClickedTail.y,
-        this.secondClickedTail.x, this.secondClickedTail.y))) {
+    if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTile, this.secondClickedTile))) {
 
-        var fcx = this.firstClickedTail.x,
-            fcy = this.firstClickedTail.y,
-            scx = this.secondClickedTail.x,
-            scy = this.secondClickedTail.y,
-            self = this;
+        fcx = this.firstClickedTile.x;
+        fcy = this.firstClickedTile.y;
+        scx = this.secondClickedTile.x;
+        scy = this.secondClickedTile.y;
         this.swap(fcx, fcy, scx, scy);
 
-        game.drawer.animateSwap(fcx, fcy, scx, scy, this.modelArr, function() {
+        this.drawer.animateSwap(fcx, fcy, scx, scy, this.modelArr, function() {
 
                 maxX = Math.max(fcx, scx);
                 minX = Math.min(fcx, scx);
@@ -159,33 +166,34 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
 
                 self.findGroup(minY, maxY, 0, self.width - 1); //find horizontal group
                 self.findGroup(0, self.height - 1, minX, maxX); // find vertical group
+
                 self.removeGroup();
             });
     }
 };
 
 Game.prototype.removeGroup = function () {
-   // var groupLength = groups.length;
-   // for (var i = 0; i < groupLength; i++) {
-        //console.log(this.groups[i]);
-        for (var j = this.groups[0].startX; j <= this.groups[0].finishX; j++) {
-            for (var k = this.groups[0].startY; k <= this.groups[0].finishY; k++) {
-                this.modelArr[j][k].color = 8;
-            }
+    if (this.groups.length == 0) {
+        return false;
+    }
+    for (var j = this.groups[0].startX; j <= this.groups[0].finishX; j++) {
+        for (var k = this.groups[0].startY; k <= this.groups[0].finishY; k++) {
+            this.modelArr[j][k].color = this.VALUES.EMPTY;
         }
-        this.shiftGroup(0);
- //   }
+    }
+    this.shiftGroup(0);
 };
 
 Game.prototype.shiftGroup = function (i) {
 
     var self = this,
+        groupLength,
         startRow,
         finishRow,
         startColumn,
         finishColumn;
 
-        for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
+    /*    for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
             for (var k = this.groups[i].startY; k <= this.groups[i].finishY; k++) {
 
                 if (k == 0) {
@@ -193,7 +201,7 @@ Game.prototype.shiftGroup = function (i) {
                     this.randomGenerateColorsForGroup(this.groups[i]);
                 }
 
-                if (this.groups[i].startY == this.groups[i].finishY) {                 //horizontal group
+                if (this.groups[i].startY == this.groups[i].finishY) {                 //if horizontal group
 
                         this.swap(j, k, j, k - 1);
                         game.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function(){ //need special animation
@@ -209,8 +217,11 @@ Game.prototype.shiftGroup = function (i) {
                         startColumn = this.groups[i].startX;
                         finishColumn = this.groups[i].finishX;
 
-                } else if (this.groups[i].startX == this.groups[i].finishX) {          //vertical group
+                } else if (this.groups[i].startX == this.groups[i].finishX) {          //if vertical group
                     var groupLength = this.groups[i].finishY - this.groups[i].startY + 1;
+                    if ((k - groupLength) < 0) {
+
+                    }
                     this.swap(j, k, j , k - groupLength );
                     game.drawer.animateSwap(j, k, j , k - groupLength , this.modelArr, function(){
 
@@ -222,26 +233,75 @@ Game.prototype.shiftGroup = function (i) {
                     });
                 }
             }
+        } */
+    var activeGroup;
+    if (this.groups[i].startY == this.groups[i].finishY) {                             //if horizontal group
+        var k = this.groups[i].startY;
+        if (k == 0) {
+            this.randomGenerateColorsForGroup(this.groups[i]);
+            return;
         }
+        for (var j = this.groups[i].startX; j <= this.groups[i].finishX; j++) {
+
+            this.swap(j, k, j, k - 1);
+            this.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function () { //need special animation
+
+                self.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
+                self.findGroup(0, self.height - 1, 0, self.width - 1);
+                self.removeGroup(self.groups);
+            });
+        }
+        startRow = this.groups[i].startY - 1;
+        finishRow = this.groups[i].finishY - 1;
+        startColumn = this.groups[i].startX;
+        finishColumn = this.groups[i].finishX;
+    }
+
+    if (this.groups[i].startX == this.groups[i].finishX) {                                 //if vertical group
+
+        groupLength = this.groups[i].finishY - this.groups[i].startY + 1;
+        j = this.groups[i].startX;
+        for ( k = this.groups[i].finishY; k >= this.groups[i].startY; k--) {
+
+            if ((k - groupLength) < 0) {
+                this.randomGenerateColorsForGroup(this.groups[i]);
+            }
+            this.swap(j, k, j, k - groupLength);
+            game.drawer.animateSwap(j, k, j, k - groupLength, this.modelArr, function () {
+
+                game.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
+                self.findGroup(0, self.height - 1, 0, self.width - 1);
+                self.removeGroup(self.groups);
+            });
+        }
+        startRow = this.groups[i].startY - groupLength;
+        finishRow = this.groups[i].finishY - groupLength;
+        startColumn = this.groups[i].startX;
+        finishColumn = this.groups[i].finishX;
+    }
 
     this.groups.pop();
     this.groups.push({startX: startColumn, startY: startRow, finishX: finishColumn, finishY: finishRow });
-        this.removeGroup(this.groups);
+    this.removeGroup(this.groups);
 };
 
 Game.prototype.randomGenerateColorsForGroup = function (group) {
     for (var j = group.startX; j <= group.finishX; j++) {
         for (var i = group.startY; i <= group.finishY; i++) {
-            this.modelArr[j][i].color =  Math.floor(Math.random()*this.numberOfColors);
+            this.modelArr[j][i].color = Math.floor(Math.random()*this.numberOfColors);
             console.log("rand color");
         }
     }
-    this.groups.pop();
-    game.drawer.drawField(this.modelArr); // or draw only group...
+    this.groups.pop(); // todo WTF?
+    this.drawer.drawField(this.modelArr); // or draw only group...
 };
 
-Game.prototype.isNeighbors = function (x1, y1, x2, y2) {
-    var neighbors = [
+Game.prototype.isNeighbors = function (tile1, tile2) {
+    var x1 = tile1.x,
+        y1 = tile1.y,
+        x2 = tile2.x,
+        y2 = tile2.y,
+        neighbors = [
         {
             x : 0,
             y : -1
