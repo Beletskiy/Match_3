@@ -11,7 +11,7 @@ function Game () {
 }
 
 Game.prototype.VALUES = {
-    EMPTY : 8,
+    EMPTY : 8
 };
 
 Game.prototype.start = function(width, height, numberOfColors) {
@@ -105,7 +105,7 @@ Game.prototype.swap = function (x1, y1, x2, y2 ) {
 
 Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOfColumns) {
 
-    // todo resolve this with potential groups
+    // todo resolve this with potential groups, optimization
 
     var hasGroups = 0;
     // Check horizontal swaps
@@ -187,6 +187,7 @@ Game.prototype.removeGroup = function () {
 Game.prototype.shiftGroup = function (i) {
 
     var self = this,
+        activeGroup = this.groups[i],
         groupLength,
         startRow,
         finishRow,
@@ -234,7 +235,6 @@ Game.prototype.shiftGroup = function (i) {
                 }
             }
         } */
-    var activeGroup;
     if (this.groups[i].startY == this.groups[i].finishY) {                             //if horizontal group
         var k = this.groups[i].startY;
         if (k == 0) {
@@ -269,7 +269,7 @@ Game.prototype.shiftGroup = function (i) {
             this.swap(j, k, j, k - groupLength);
             game.drawer.animateSwap(j, k, j, k - groupLength, this.modelArr, function () {
 
-                game.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
+                self.drawer.drawField(self.modelArr); //  or redraw only need tiles, organize fall new group from top
                 self.findGroup(0, self.height - 1, 0, self.width - 1);
                 self.removeGroup(self.groups);
             });
