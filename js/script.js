@@ -198,6 +198,8 @@ Game.prototype.shiftGroup = function (i) {
         var k = activeGroup.startY;
         if (k == 0) {
             this.randomGenerateColorsForGroup(activeGroup);
+            this.findGroup(0, this.height - 1, 0, this.width - 1);
+            this.removeGroup(this.groups);
             return;
         }
         for (var j = activeGroup.startX; j <= activeGroup.finishX; j++) {
@@ -223,7 +225,12 @@ Game.prototype.shiftGroup = function (i) {
         for ( k = activeGroup.finishY; k >= activeGroup.startY; k--) {
 
             if ((k - groupLength) < 0) {
+                this.groups.pop();
+                this.groups.push({startX: j, startY: 0, finishX: j, finishY: groupLength - 1 });
+                activeGroup = this.groups[i];
                 this.randomGenerateColorsForGroup(activeGroup);
+                this.findGroup(0, this.height - 1, 0, this.width - 1);
+                this.removeGroup(this.groups);
                 return;
             }
             this.swap(j, k, j, k - groupLength);
