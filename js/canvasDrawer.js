@@ -51,7 +51,6 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
 
 
     var animateS = function() {
-        console.log("call animate");
 
             ctx.clearRect(topLeftCornerX, topLeftCornerY, widthOfSwappedGroup, heightOfSwappedGroup);
 
@@ -75,6 +74,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
            var timer =  setTimeout(animateS, 50);
         if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
             clearTimeout(timer);
+
             if (callback) {
                 callback();
             }
@@ -94,25 +94,27 @@ CanvasDrawer.prototype.animateNewGroup = function (group, modelArr, callback) {
         startY = group[0].startY,
         finishY = group[0].finishY,
         widthOfGroup = (finishX - startX + 1)*cellSize,
+        heightOfGroup = (finishY - startY +1)*cellSize,
         self = this;
-    ctx.clearRect(startX*cellSize, startY*cellSize, widthOfGroup , cellSize );
+    ctx.clearRect(startX*cellSize, startY*cellSize, widthOfGroup , heightOfGroup);
 
     var animateS = function() {
         for (var i = startX; i <= finishX; i++) {
-            colorOfTile = self.colors[canvasArr[i][0].color];
-            ctx.fillStyle = colorOfTile;
-            ctx.fillRect(i*cellSize + 1, 0*cellSize + 1, cellSize - 1, shiftY);
+            for (var j = startY; j <= finishY; j++) {
+                colorOfTile = self.colors[canvasArr[i][j].color];
+                ctx.fillStyle = colorOfTile;
+                ctx.fillRect(i * cellSize + 1, j * cellSize + 1, cellSize - 1, shiftY);
+            }
         }
-
         shiftY++;
         var timer =  setTimeout(animateS, 50);
         if (shiftY == cellSize) {
             clearTimeout(timer);
+
             if (callback) {
                 callback();
             }
         }
     };
     animateS();
-
 };

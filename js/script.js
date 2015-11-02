@@ -98,9 +98,11 @@ Game.prototype.findGroup = function (startRow, finishRow, startColumn, finishCol
 };
 
 Game.prototype.swap = function (x1, y1, x2, y2 ) {
-        var tempSwap = this.modelArr[x1][y1].color;
-        this.modelArr[x1][y1].color = this.modelArr[x2][y2].color;
-        this.modelArr[x2][y2].color = tempSwap;
+        var tempSwap = this.modelArr[x1][y1].color,
+            tempArr = this.modelArr;
+        tempArr[x1][y1].color = tempArr[x2][y2].color;
+        tempArr[x2][y2].color = tempSwap;
+        this.modelArr = tempArr;
 };
 
 Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOfColumns) {
@@ -197,18 +199,13 @@ Game.prototype.shiftGroup = function (i) {
         var k = activeGroup.startY;
         if (k == 0) {
             this.randomGenerateColorsForGroup(activeGroup);
-            this.findGroup(0, this.height - 1, 0, this.width - 1);
-            this.removeGroup(this.groups);
             return;
         }
         for (var j = activeGroup.startX; j <= activeGroup.finishX; j++) {
 
             this.swap(j, k, j, k - 1);
-            this.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function () { //need special animation
-
-                self.drawer.drawField(self.modelArr); //  or redraw only need tails, organize fall new group from top
-                self.findGroup(0, self.height - 1, 0, self.width - 1);
-                self.removeGroup(self.groups);
+            this.drawer.animateSwap(j, k, j, k - 1, this.modelArr, function () {
+                self.drawer.drawField(self.modelArr); //  or redraw only need tiles
             });
         }
         startRow = activeGroup.startY - 1;
@@ -228,16 +225,11 @@ Game.prototype.shiftGroup = function (i) {
                 this.groups.push({startX: j, startY: 0, finishX: j, finishY: groupLength - 1 });
                 activeGroup = this.groups[i];
                 this.randomGenerateColorsForGroup(activeGroup);
-                this.findGroup(0, this.height - 1, 0, this.width - 1);
-                this.removeGroup(this.groups);
                 return;
             }
             this.swap(j, k, j, k - groupLength);
             this.drawer.animateSwap(j, k, j, k - groupLength, this.modelArr, function () {
-
-                self.drawer.drawField(self.modelArr); //  or redraw only need tiles, organize fall new group from top
-                self.findGroup(0, self.height - 1, 0, self.width - 1);
-                self.removeGroup(self.groups);
+                self.drawer.drawField(self.modelArr);
             });
         }
         startRow = activeGroup.startY - groupLength;
@@ -245,22 +237,24 @@ Game.prototype.shiftGroup = function (i) {
         startColumn = activeGroup.startX;
         finishColumn = activeGroup.finishX;
     }
-
     this.groups.pop();
     this.groups.push({startX: startColumn, startY: startRow, finishX: finishColumn, finishY: finishRow });
     this.removeGroup(this.groups);
 };
 
 Game.prototype.randomGenerateColorsForGroup = function (group) {
+    var self = this;
     for (var j = group.startX; j <= group.finishX; j++) {
         for (var i = group.startY; i <= group.finishY; i++) {
             this.modelArr[j][i].color = Math.floor(Math.random()*this.numberOfColors);
         }
     }
-    console.log(this.groups);
-    this.drawer.animateNewGroup(this.groups, this.modelArr);
+    this.drawer.animateNewGroup(this.groups, this.modelArr, function(){
+        self.findGroup(0, self.height - 1, 0, self.width - 1);
+        self.removeGroup(self.groups);
+       // self.drawer.drawField(self.modelArr);
+    });
     this.groups.pop(); // todo WTF?
-    //this.drawer.drawField(this.modelArr); // or draw only group...
 };
 
 Game.prototype.isNeighbors = function (tile1, tile2) {
