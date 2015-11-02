@@ -11,7 +11,8 @@ function Game () {
 }
 
 Game.prototype.VALUES = {
-    EMPTY : 8
+    EMPTY : 8,
+    MATCH : 3
 };
 
 Game.prototype.start = function(width, height, numberOfColors) {
@@ -37,7 +38,6 @@ Game.prototype.start = function(width, height, numberOfColors) {
     hasGroups = this.findGroup(startRow, this.height - 1, startColumn, this.width - 1);
     hasMove = this.hasMove(startRow, this.height - 1, startColumn, this.width - 1);
     this.groups = [];
-    //console.log(hasGroups);
     if (hasGroups || !hasMove) {
         this.start(width, height, numberOfColors);
     }
@@ -56,7 +56,7 @@ Game.prototype.findGroup = function (startRow, finishRow, startColumn, finishCol
                     finishPositionOfMatches.x = j + 1;
                     startPositionOfMatches.x = finishPositionOfMatches.x - numberOfMatches;
                     startPositionOfMatches.y = finishPositionOfMatches.y = i;
-                    if (numberOfMatches > 2) {
+                    if (numberOfMatches > this.VALUES.MATCH - 1) {
                         this.groups.pop();
                     }
                     this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
@@ -79,7 +79,7 @@ Game.prototype.findGroup = function (startRow, finishRow, startColumn, finishCol
                     finishPositionOfMatches.y = i + 1;
                     startPositionOfMatches.y = finishPositionOfMatches.y - numberOfMatches;
                     startPositionOfMatches.x = finishPositionOfMatches.x = j;
-                    if (numberOfMatches > 2) {
+                    if (numberOfMatches > this.VALUES.MATCH) {
                         this.groups.pop();
                     }
                     this.groups.push({startX: startPositionOfMatches.x, startY: startPositionOfMatches.y,
@@ -93,7 +93,6 @@ Game.prototype.findGroup = function (startRow, finishRow, startColumn, finishCol
         }
         numberOfMatches = 0;
     }
-    //console.log(this.groups);
     return this.groups.length;
 };
 
@@ -105,16 +104,16 @@ Game.prototype.swap = function (x1, y1, x2, y2 ) {
         this.modelArr = tempArr;
 };
 
-Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOfColumns) {
+Game.prototype.hasMove = function (startRow, finishRow, startColumn, finishColumn) {
 
     // todo resolve this with potential groups, optimization
 
     var hasGroups = 0;
     // Check horizontal swaps
-    for (var j = startRow; j < numberOfRows; j++) {
-        for (var i = startColumn; i < numberOfColumns - 1; i++) {
+    for (var j = startRow; j < finishRow; j++) {
+        for (var i = startColumn; i < finishColumn - 1; i++) {
             this.swap(i, j, i + 1, j);
-            hasGroups = this.findGroup(startRow, numberOfRows, startColumn, numberOfColumns);
+            hasGroups = this.findGroup(startRow, finishRow, startColumn, finishColumn);
             this.swap(i, j, i + 1, j);
             if (hasGroups) {
                 return true;
@@ -122,10 +121,10 @@ Game.prototype.hasMove = function (startRow, numberOfRows, startColumn, numberOf
         }
     }
     // Check vertical swaps
-    for (i = startColumn; i < numberOfColumns; i++) {
-        for (j = startRow; j < numberOfRows - 1; j++) {
+    for (i = startColumn; i < finishRow; i++) {
+        for (j = startRow; j < finishRow - 1; j++) {
             this.swap(i, j, i , j + 1);
-            hasGroups = this.findGroup(startRow, numberOfRows, startColumn, numberOfColumns);
+            hasGroups = this.findGroup(startRow, finishRow, startColumn, finishColumn);
             this.swap(i, j, i , j + 1);
             if (hasGroups) {
                 return true;

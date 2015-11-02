@@ -24,6 +24,7 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
             colorOfTile = this.colors[canvasArr[i][j].color];
             ctx.fillStyle = colorOfTile;
             ctx.fillRect(i*cellSize + 1, j*cellSize + 1, cellSize - 1, cellSize - 1);
+
         }
     }
     this.canvasField.onclick = function(e) {
@@ -34,6 +35,7 @@ CanvasDrawer.prototype.drawField = function (modelArr) {
 };
 
 CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callback) {
+
     var ctx = this.ctx,
         cellSize = this.cellSize,
         shiftX = x2 - x1,
@@ -49,29 +51,29 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
         y1Coordinate = y1 * cellSize + 1,
         y2Coordinate = y2 * cellSize + 1;
 
-
     var animateS = function() {
 
-            ctx.clearRect(topLeftCornerX, topLeftCornerY, widthOfSwappedGroup, heightOfSwappedGroup);
+      //  console.log('animateS', x1Coordinate + shiftX, y1Coordinate + shiftY, cellSize - 1, cellSize - 1);
+        ctx.clearRect(topLeftCornerX, topLeftCornerY, widthOfSwappedGroup, heightOfSwappedGroup);
 
-            ctx.fillStyle = color2;
-            ctx.fillRect(x1Coordinate + shiftX, y1Coordinate + shiftY, cellSize - 1, cellSize - 1);
-            ctx.fillStyle = color1;
-            ctx.fillRect(x2Coordinate - shiftX, y2Coordinate - shiftY, cellSize - 1, cellSize - 1);
+        ctx.fillStyle = color2;
+        ctx.fillRect(x1Coordinate + shiftX, y1Coordinate + shiftY, cellSize - 1, cellSize - 1);
+        ctx.fillStyle = color1;
+        ctx.fillRect(x2Coordinate - shiftX, y2Coordinate - shiftY, cellSize - 1, cellSize - 1);
 
-            if (shiftX > 0) { // оптимизировать
-                shiftX++;
-            }
-            else if (shiftX < 0) {
-                shiftX--;
-            }
-            else if (shiftY > 0) {
-                shiftY++;
-            }
-            else if (shiftY < 0) {
-                shiftY--;
-            }
-           var timer =  setTimeout(animateS, 50);
+        if (shiftX > 0) { // оптимизировать
+            shiftX++;
+        }
+        else if (shiftX < 0) {
+            shiftX--;
+        }
+        else if (shiftY > 0) {
+            shiftY++;
+        }
+        else if (shiftY < 0) {
+            shiftY--;
+        }
+        var timer = setTimeout(animateS, 50);
         if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
             clearTimeout(timer);
 
