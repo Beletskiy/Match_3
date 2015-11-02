@@ -120,3 +120,36 @@ CanvasDrawer.prototype.animateNewGroup = function (group, modelArr, callback) {
     };
     animateS();
 };
+
+CanvasDrawer.prototype.animateHorizontalGroups = function (swappedArr, callback) {
+    var ctx = this.ctx,
+        cellSize = this.cellSize,
+        shiftY = 0,
+        startX = swappedArr[0][0],
+        finishX = swappedArr[0].length,
+        startY = 0,
+        finishY = swappedArr.length;
+    console.log(swappedArr);
+
+
+    var animateS = function() {
+        for (var i = startY; i <= finishY; i++) {
+            for (var j = startX; j <= finishX; j++) {
+                var colorOfTile = self.colors[swappedArr[i][j].color];
+                ctx.fillStyle = colorOfTile;
+                ctx.fillRect(i * cellSize + 1, j * cellSize + 1 + shiftY, cellSize - 1, cellSize -1);
+            }
+        }
+        shiftY++;
+        var timer =  setTimeout(animateS, 50);
+        if (shiftY == cellSize) {
+            clearTimeout(timer);
+
+            if (callback) {
+                callback();
+            }
+        }
+    };
+    animateS();
+
+}; 
