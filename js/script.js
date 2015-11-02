@@ -166,7 +166,6 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
 
                 self.findGroup(minY, maxY, 0, self.width - 1); //find horizontal group
                 self.findGroup(0, self.height - 1, minX, maxX); // find vertical group
-
                 self.removeGroup();
             });
     }
@@ -258,8 +257,10 @@ Game.prototype.randomGenerateColorsForGroup = function (group) {
             this.modelArr[j][i].color = Math.floor(Math.random()*this.numberOfColors);
         }
     }
+    console.log(this.groups);
+    this.drawer.animateNewGroup(this.groups, this.modelArr);
     this.groups.pop(); // todo WTF?
-    this.drawer.drawField(this.modelArr); // or draw only group...
+    //this.drawer.drawField(this.modelArr); // or draw only group...
 };
 
 Game.prototype.isNeighbors = function (tile1, tile2) {
@@ -271,6 +272,6 @@ Game.prototype.isNeighbors = function (tile1, tile2) {
 };
 
 game = new Game();
-game.start(10,7,4);
+game.start(10,7,5);
 game.drawer.drawField(game.modelArr);
 
