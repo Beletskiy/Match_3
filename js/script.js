@@ -211,19 +211,12 @@ Game.prototype.shiftGroup = function (i) {
             self.groups.push({startX: startColumn, startY: startRow, finishX: finishColumn, finishY: finishRow });
             self.randomGenerateColorsForGroup(self.groups);
         });
-
     }
 
     if (activeGroup.startX == activeGroup.finishX) {                                 //if vertical group
-        console.log(this.groups);
-       /* shiftedBlock.startX = activeGroup.startX;
-        shiftedBlock.finishX = activeGroup.finishX;
-        shiftedBlock.startY = 0;
-        shiftedBlock.finishY = activeGroup.startY - 1; */
 
-        this.drawer.animateVerticalBlock(activeGroup, this.modelArr, function(){ //???
+        this.drawer.animateVerticalBlock(activeGroup, this.modelArr, function(){
             self.changeModelAfterVerticalShift(activeGroup);
-            self.drawer.drawField(self.modelArr);
             startRow = 0;
             finishRow = activeGroup.finishY - activeGroup.startY;
             startColumn = activeGroup.startX;
@@ -233,21 +226,34 @@ Game.prototype.shiftGroup = function (i) {
             self.randomGenerateColorsForGroup(self.groups);
         });
     }
-
+  //  self.drawer.drawField(self.modelArr); //
 };
 
 Game.prototype.randomGenerateColorsForGroup = function (groups) {
-    var self = this;
+    var self = this,
+        isHorizontalGroup = false;
+    if (groups[0].startY == groups[0].finishY) {
+        isHorizontalGroup = true;
+    }
     for (var j = groups[0].startX; j <= groups[0].finishX; j++) {
         for (var i = groups[0].startY; i <= groups[0].finishY; i++) {
             this.modelArr[j][i].color = Math.floor(Math.random()*this.numberOfColors);
         }
     }
-    this.drawer.animateNewHorizontalGroup(this.groups, this.modelArr, function(){
-        self.groups.pop();
-        self.findGroup(0, self.height - 1, 0, self.width - 1);
-        self.removeGroup(self.groups);
-    });
+    if (isHorizontalGroup) {
+        this.drawer.animateNewHorizontalGroup(this.groups, this.modelArr, function () {
+            self.groups.pop();
+            self.findGroup(0, self.height - 1, 0, self.width - 1);
+            self.removeGroup(self.groups);
+        });
+    }
+    else {
+        this.drawer.animateNewVerticalGroup(this.groups, this.modelArr, function () {
+            self.groups.pop();
+            self.findGroup(0, self.height - 1, 0, self.width - 1);
+            self.removeGroup(self.groups);
+        });
+    }
 };
 
 Game.prototype.isNeighbors = function (tile1, tile2) {
@@ -290,8 +296,6 @@ Game.prototype.changeModelAfterVerticalShift = function (activeGroup) {
     }
     this.modelArr = tempArr;
 };
-
-
 
 game = new Game();
 game.start(10,7,5);

@@ -94,10 +94,7 @@ CanvasDrawer.prototype.animateNewHorizontalGroup = function (group, modelArr, ca
         finishX = group[0].finishX,
         startY = group[0].startY,
         finishY = group[0].finishY,
-      //  widthOfGroup = (finishX - startX + 1)*cellSize,
-      //  heightOfGroup = (finishY - startY +1)*cellSize,
         self = this;
-    //ctx.clearRect(startX*cellSize, startY*cellSize, widthOfGroup , heightOfGroup);
 
     var animateS = function() {
         for (var i = startX; i <= finishX; i++) {
@@ -110,6 +107,41 @@ CanvasDrawer.prototype.animateNewHorizontalGroup = function (group, modelArr, ca
         shiftY++;
         var timer =  setTimeout(animateS, 50);
         if (shiftY == cellSize) {
+            clearTimeout(timer);
+
+            if (callback) {
+                callback();
+            }
+        }
+    };
+    animateS();
+};
+
+CanvasDrawer.prototype.animateNewVerticalGroup = function (group, modelArr, callback) {
+    var canvasArr = modelArr,
+        ctx = this.ctx,
+        cellSize = this.cellSize,
+        shiftY = 1,
+        colorOfTile,
+        startX = group[0].startX,
+        finishX = group[0].finishX,
+        startY = group[0].startY,
+        finishY = group[0].finishY,
+        groupHeight = finishY - startY + 1,
+        self = this;
+
+    var animateS = function() {
+        for (var i = finishY; i >= startY; i--) {
+            for (var j = 0; j < cellSize; j++) {
+                colorOfTile = self.colors[canvasArr[startX][i].color];
+                ctx.fillStyle = colorOfTile;
+                ctx.fillRect(startX * cellSize + 1, shiftY, cellSize - 1, shiftY);
+                shiftY++;
+            }
+        }
+        //shiftY++;
+        var timer =  setTimeout(animateS, 50);
+        if (shiftY == cellSize*groupHeight) {
             clearTimeout(timer);
 
             if (callback) {
@@ -172,8 +204,6 @@ CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  
         activeGroupHeight = (activeGroup.finishY - activeGroup.startY + 1)*cellSize,
         activeGroupStartXcoordinate = activeGroupStartX*cellSize,
         activeGroupStartYcoordinate = activeGroup.startY*cellSize,
-        //startYcoordinate = startY*cellSize,
-        //bottomRectCoordinateY = finishY*cellSize + cellSize,
         colorOfTile;
 
     ctx.clearRect(activeGroupStartXcoordinate, activeGroupStartYcoordinate, cellSize, activeGroupHeight );
