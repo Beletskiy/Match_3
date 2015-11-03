@@ -84,7 +84,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
     animateS();
 };
 
-CanvasDrawer.prototype.animateNewGroup = function (group, modelArr, callback) {
+CanvasDrawer.prototype.animateNewHorizontalGroup = function (group, modelArr, callback) {
     var canvasArr = modelArr,
         ctx = this.ctx,
         cellSize = this.cellSize,
@@ -157,5 +157,45 @@ CanvasDrawer.prototype.animateHorizontalBlock = function (shiftedBlock, modelArr
         }
     };
     animateS();
+};
 
-}; 
+CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  callback) {
+    var ctx = this.ctx,
+        self = this,
+        canvasArr = modelArr,
+        cellSize = this.cellSize,
+        shiftY = 0,
+        activeGroupStartX = activeGroup.startX,
+        finishX = activeGroup.finishX,
+        startY = 0,
+        finishY = activeGroup.startY - 1,
+        activeGroupHeight = (activeGroup.finishY - activeGroup.startY + 1)*cellSize,
+        activeGroupStartXcoordinate = activeGroupStartX*cellSize,
+        activeGroupStartYcoordinate = activeGroup.startY*cellSize,
+        //startYcoordinate = startY*cellSize,
+        //bottomRectCoordinateY = finishY*cellSize + cellSize,
+        colorOfTile;
+
+    ctx.clearRect(activeGroupStartXcoordinate, activeGroupStartYcoordinate, cellSize, activeGroupHeight );
+
+    var animateS = function() {
+        ctx.clearRect(activeGroupStartXcoordinate, 0 , cellSize, shiftY);
+        for (var i = startY; i <= finishY; i++) {
+            for (var j = activeGroupStartX; j <= finishX; j++) {
+                colorOfTile = self.colors[canvasArr[j][i].color];
+                ctx.fillStyle = colorOfTile;
+                ctx.fillRect(j * cellSize + 1, i * cellSize + 1 + shiftY, cellSize - 1, cellSize -1);
+            }
+        }
+        shiftY++;
+        var timer =  setTimeout(animateS, 50);
+        if (shiftY == activeGroupHeight) {
+            clearTimeout(timer);
+
+            if (callback) {
+                callback();
+            }
+        }
+    };
+    animateS();
+};
