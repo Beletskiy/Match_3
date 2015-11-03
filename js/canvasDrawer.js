@@ -98,7 +98,7 @@ CanvasDrawer.prototype.animateNewGroup = function (group, modelArr, callback) {
         widthOfGroup = (finishX - startX + 1)*cellSize,
         heightOfGroup = (finishY - startY +1)*cellSize,
         self = this;
-    ctx.clearRect(startX*cellSize, startY*cellSize, widthOfGroup , heightOfGroup);
+    //ctx.clearRect(startX*cellSize, startY*cellSize, widthOfGroup , heightOfGroup);
 
     var animateS = function() {
         for (var i = startX; i <= finishX; i++) {
@@ -121,28 +121,35 @@ CanvasDrawer.prototype.animateNewGroup = function (group, modelArr, callback) {
     animateS();
 };
 
-CanvasDrawer.prototype.animateHorizontalGroups = function (swappedArr, callback) {
+CanvasDrawer.prototype.animateHorizontalBlock = function (shiftedBlock, modelArr,  callback) {
     var ctx = this.ctx,
+        self = this,
+        canvasArr = modelArr,
         cellSize = this.cellSize,
         shiftY = 0,
-        startX = swappedArr[0][0],
-        finishX = swappedArr[0].length,
-        startY = 0,
-        finishY = swappedArr.length;
-    console.log(swappedArr);
-
+        startX = shiftedBlock.startX,
+        finishX = shiftedBlock.finishX,
+        startY = shiftedBlock.startY,
+        finishY = shiftedBlock.finishY,
+        groupLength = (finishX - startX + 1)*cellSize,
+        leftBorderCoordinate = startX*cellSize,
+        topRectCoordinateY = startY*cellSize,
+        bottomRectCoordinateY = finishY*cellSize + cellSize,
+        colorOfTile;
 
     var animateS = function() {
+        ctx.clearRect(leftBorderCoordinate, topRectCoordinateY, groupLength, shiftY);
+        ctx.clearRect(leftBorderCoordinate, bottomRectCoordinateY, groupLength, cellSize - shiftY);
         for (var i = startY; i <= finishY; i++) {
             for (var j = startX; j <= finishX; j++) {
-                var colorOfTile = self.colors[swappedArr[i][j].color];
+                colorOfTile = self.colors[canvasArr[j][i].color];
                 ctx.fillStyle = colorOfTile;
-                ctx.fillRect(i * cellSize + 1, j * cellSize + 1 + shiftY, cellSize - 1, cellSize -1);
+                ctx.fillRect(j * cellSize + 1, i * cellSize + 1 + shiftY, cellSize - 1, cellSize -1);
             }
         }
         shiftY++;
         var timer =  setTimeout(animateS, 50);
-        if (shiftY == cellSize) {
+        if (shiftY == cellSize + 1) {
             clearTimeout(timer);
 
             if (callback) {

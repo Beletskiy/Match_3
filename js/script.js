@@ -189,6 +189,7 @@ Game.prototype.shiftGroup = function (i) {
     var self = this,
         activeGroup = this.groups[i],
         swappedArr = [],
+        shiftedBlock = {},
         groupLength,
         startRow,
         finishRow,
@@ -197,14 +198,24 @@ Game.prototype.shiftGroup = function (i) {
 
     if (activeGroup.startY == activeGroup.finishY) {                             //if horizontal group
 
-        for (var k = 0; k < activeGroup.finishY; k++) {
-            var tiles = [];
-            for (var j = activeGroup.startX; j <= activeGroup.finishX; j++) {
-                tiles.push({color : this.modelArr[j][k].color});
-            }
-            swappedArr.push(tiles);
-        }
-        this.drawer.animateHorizontalGroups(swappedArr);
+        shiftedBlock.startX = activeGroup.startX;
+        shiftedBlock.finishX = activeGroup.finishX;
+        shiftedBlock.startY = 0;
+        shiftedBlock.finishY = activeGroup.finishY - 1;
+        this.drawer.animateHorizontalBlock(shiftedBlock, this.modelArr, function(){
+            self.changeModel(activeGroup);
+            startRow = 0;
+            finishRow = 0;
+            startColumn = activeGroup.startX;
+            finishColumn = activeGroup.finishX;
+            self.groups.pop();
+            //self.drawer.drawField(self.modelArr);
+            self.groups.push({startX: startColumn, startY: startRow, finishX: finishColumn, finishY: finishRow });
+            self.randomGenerateColorsForGroup(self.groups);
+           /* self.findGroup(0, self.height - 1, 0, self.width - 1);
+            self.removeGroup(); */
+        });
+
     }
 
     if (activeGroup.startX == activeGroup.finishX) {                                 //if vertical group
@@ -222,11 +233,12 @@ Game.prototype.randomGenerateColorsForGroup = function (group) {
         }
     }
     this.drawer.animateNewGroup(this.groups, this.modelArr, function(){
+        self.groups.pop();
         self.findGroup(0, self.height - 1, 0, self.width - 1);
         self.removeGroup(self.groups);
        // self.drawer.drawField(self.modelArr);
     });
-    this.groups.pop(); // todo WTF?
+   // this.groups.pop(); // todo WTF?
 };
 
 Game.prototype.isNeighbors = function (tile1, tile2) {
@@ -235,6 +247,22 @@ Game.prototype.isNeighbors = function (tile1, tile2) {
         x2 = tile2.x,
         y2 = tile2.y;
     return (Math.abs(x1 - x2) + Math.abs(y1 - y2) == 1);
+};
+
+Game.prototype.changeModel = function (activeGroup) {
+    var tempArr = this.modelArr;
+    for (var j = activeGroup.finishY; j >= 0; j--) {
+        for (var i = activeGroup.startX; i <= activeGroup.finishX; i++) {
+
+            if (j > 0) {
+                tempArr[i][j].color = tempArr[i][j - 1].color;
+            }
+            else if (j == 0){
+                tempArr[i][j].color = this.VALUES.EMPTY;
+            }
+            }
+        }
+    this.modelArr = tempArr;
 };
 
 game = new Game();
