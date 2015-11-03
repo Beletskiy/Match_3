@@ -53,7 +53,6 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
 
     var animateS = function() {
 
-      //  console.log('animateS', x1Coordinate + shiftX, y1Coordinate + shiftY, cellSize - 1, cellSize - 1);
         ctx.clearRect(topLeftCornerX, topLeftCornerY, widthOfSwappedGroup, heightOfSwappedGroup);
 
         ctx.fillStyle = color2;
@@ -95,8 +94,8 @@ CanvasDrawer.prototype.animateNewGroup = function (group, modelArr, callback) {
         finishX = group[0].finishX,
         startY = group[0].startY,
         finishY = group[0].finishY,
-        widthOfGroup = (finishX - startX + 1)*cellSize,
-        heightOfGroup = (finishY - startY +1)*cellSize,
+      //  widthOfGroup = (finishX - startX + 1)*cellSize,
+      //  heightOfGroup = (finishY - startY +1)*cellSize,
         self = this;
     //ctx.clearRect(startX*cellSize, startY*cellSize, widthOfGroup , heightOfGroup);
 

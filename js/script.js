@@ -188,9 +188,7 @@ Game.prototype.shiftGroup = function (i) {
 
     var self = this,
         activeGroup = this.groups[i],
-        swappedArr = [],
         shiftedBlock = {},
-        groupLength,
         startRow,
         finishRow,
         startColumn,
@@ -202,6 +200,7 @@ Game.prototype.shiftGroup = function (i) {
         shiftedBlock.finishX = activeGroup.finishX;
         shiftedBlock.startY = 0;
         shiftedBlock.finishY = activeGroup.finishY - 1;
+
         this.drawer.animateHorizontalBlock(shiftedBlock, this.modelArr, function(){
             self.changeModel(activeGroup);
             startRow = 0;
@@ -209,11 +208,8 @@ Game.prototype.shiftGroup = function (i) {
             startColumn = activeGroup.startX;
             finishColumn = activeGroup.finishX;
             self.groups.pop();
-            //self.drawer.drawField(self.modelArr);
             self.groups.push({startX: startColumn, startY: startRow, finishX: finishColumn, finishY: finishRow });
             self.randomGenerateColorsForGroup(self.groups);
-           /* self.findGroup(0, self.height - 1, 0, self.width - 1);
-            self.removeGroup(); */
         });
 
     }
@@ -225,10 +221,10 @@ Game.prototype.shiftGroup = function (i) {
 
 };
 
-Game.prototype.randomGenerateColorsForGroup = function (group) {
+Game.prototype.randomGenerateColorsForGroup = function (groups) {
     var self = this;
-    for (var j = group.startX; j <= group.finishX; j++) {
-        for (var i = group.startY; i <= group.finishY; i++) {
+    for (var j = groups[0].startX; j <= groups[0].finishX; j++) {
+        for (var i = groups[0].startY; i <= groups[0].finishY; i++) {
             this.modelArr[j][i].color = Math.floor(Math.random()*this.numberOfColors);
         }
     }
@@ -236,9 +232,7 @@ Game.prototype.randomGenerateColorsForGroup = function (group) {
         self.groups.pop();
         self.findGroup(0, self.height - 1, 0, self.width - 1);
         self.removeGroup(self.groups);
-       // self.drawer.drawField(self.modelArr);
     });
-   // this.groups.pop(); // todo WTF?
 };
 
 Game.prototype.isNeighbors = function (tile1, tile2) {
