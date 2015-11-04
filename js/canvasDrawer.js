@@ -183,7 +183,7 @@ CanvasDrawer.prototype.animateHorizontalBlock = function (shiftedBlock, modelArr
             }
         }
         shiftY++;
-        var timer =  setTimeout(animateS, 50);
+        var timer =  setTimeout(animateS, 30);
         if (shiftY == cellSize + 1) {
             clearTimeout(timer);
             self.animationState = false;
@@ -215,7 +215,7 @@ CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  
     ctx.clearRect(activeGroupStartXcoordinate, activeGroupStartYcoordinate, cellSize, activeGroupHeight );
 
     var animateS = function() {
-        ctx.clearRect(activeGroupStartXcoordinate, 0 , cellSize, shiftY);
+        ctx.clearRect(activeGroupStartXcoordinate, startY , cellSize, shiftY);
         for (var i = startY; i <= finishY; i++) {
             for (var j = activeGroupStartX; j <= finishX; j++) {
                 colorOfTile = self.colors[canvasArr[j][i].color];
@@ -225,7 +225,7 @@ CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  
         }
         shiftY++;
         var timer =  setTimeout(animateS, 20);
-        if (shiftY == activeGroupHeight) {
+        if (shiftY > activeGroupHeight) {
             clearTimeout(timer);
             self.animationState = false;
             if (callback) {
