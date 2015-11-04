@@ -121,27 +121,23 @@ CanvasDrawer.prototype.animateNewVerticalGroup = function (group, modelArr, call
     var canvasArr = modelArr,
         ctx = this.ctx,
         cellSize = this.cellSize,
-        shiftY = 1,
         colorOfTile,
         startX = group[0].startX,
-        finishX = group[0].finishX,
         startY = group[0].startY,
         finishY = group[0].finishY,
         groupHeight = finishY - startY + 1,
+        shiftY = cellSize * groupHeight,
         self = this;
 
     var animateS = function() {
-        for (var i = finishY; i >= startY; i--) {
-            for (var j = 0; j < cellSize; j++) {
-                colorOfTile = self.colors[canvasArr[startX][i].color];
-                ctx.fillStyle = colorOfTile;
-                ctx.fillRect(startX * cellSize + 1, shiftY, cellSize - 1, shiftY);
-                shiftY++;
-            }
+        for (var i = startY; i <= finishY; i++) {
+            colorOfTile = self.colors[canvasArr[startX][i].color];
+            ctx.fillStyle = colorOfTile;
+            ctx.fillRect(startX * cellSize + 1, cellSize * i - shiftY, cellSize - 1, cellSize - 1);
+            shiftY--;
         }
-        //shiftY++;
         var timer =  setTimeout(animateS, 50);
-        if (shiftY == cellSize*groupHeight) {
+        if (shiftY < 0) {
             clearTimeout(timer);
 
             if (callback) {
@@ -218,7 +214,7 @@ CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  
             }
         }
         shiftY++;
-        var timer =  setTimeout(animateS, 50);
+        var timer =  setTimeout(animateS, 20);
         if (shiftY == activeGroupHeight) {
             clearTimeout(timer);
 

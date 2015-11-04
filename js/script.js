@@ -226,7 +226,6 @@ Game.prototype.shiftGroup = function (i) {
             self.randomGenerateColorsForGroup(self.groups);
         });
     }
-  //  self.drawer.drawField(self.modelArr); //
 };
 
 Game.prototype.randomGenerateColorsForGroup = function (groups) {
@@ -245,6 +244,7 @@ Game.prototype.randomGenerateColorsForGroup = function (groups) {
             self.groups.pop();
             self.findGroup(0, self.height - 1, 0, self.width - 1);
             self.removeGroup(self.groups);
+            self.drawer.drawField(self.modelArr);
         });
     }
     else {
@@ -252,9 +252,14 @@ Game.prototype.randomGenerateColorsForGroup = function (groups) {
             self.groups.pop();
             self.findGroup(0, self.height - 1, 0, self.width - 1);
             self.removeGroup(self.groups);
+            self.drawer.drawField(self.modelArr);
         });
     }
 };
+
+Game.prototype.findAndRemoveGroup = function () {
+    
+}; 
 
 Game.prototype.isNeighbors = function (tile1, tile2) {
     var x1 = tile1.x,
