@@ -64,7 +64,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
         ctx.fillStyle = color1;
         ctx.fillRect(x2Coordinate - shiftX, y2Coordinate - shiftY, cellSize - 1, cellSize - 1);
 
-        if (shiftX > 0) { // оптимизировать
+        if (shiftX > 0) {
             shiftX++;
         }
         else if (shiftX < 0) {
@@ -76,7 +76,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
         else if (shiftY < 0) {
             shiftY--;
         }
-        var timer = setTimeout(animateS, 50);
+        var timer = setTimeout(animateS, 30);
         if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
             self.animationState = false;
             clearTimeout(timer);
@@ -98,18 +98,15 @@ CanvasDrawer.prototype.animateNewHorizontalGroup = function (group, modelArr, ca
         startX = group[0].startX,
         finishX = group[0].finishX,
         startY = group[0].startY,
-        finishY = group[0].finishY,
         self = this;
 
     this.animationState = true;
 
     var animateS = function() {
         for (var i = startX; i <= finishX; i++) {
-            for (var j = startY; j <= finishY; j++) {
-                colorOfTile = self.colors[canvasArr[i][j].color];
+                colorOfTile = self.colors[canvasArr[i][startY].color];
                 ctx.fillStyle = colorOfTile;
-                ctx.fillRect(i * cellSize + 1, j * cellSize + 1, cellSize - 1, shiftY);
-            }
+                ctx.fillRect(i * cellSize + 1, startY + 1 , cellSize - 1, shiftY);
         }
         shiftY++;
         var timer =  setTimeout(animateS, 50);
