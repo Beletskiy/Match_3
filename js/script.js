@@ -140,25 +140,26 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
     var fcx, fcy, scx, scy,
         self = this;
 
-    if (this.isFirstClick) {
-        this.firstClickedTile.x = mousePositionX;
-        this.firstClickedTile.y = mousePositionY;
-        this.isFirstClick = false;
+    if (!this.drawer.animationState) {
+        if (this.isFirstClick) {
+            this.firstClickedTile.x = mousePositionX;
+            this.firstClickedTile.y = mousePositionY;
+            this.isFirstClick = false;
 
-    } else {
-        this.secondClickedTile.x = mousePositionX;
-        this.secondClickedTile.y = mousePositionY;
-        this.isFirstClick = true;
-    }
-    if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTile, this.secondClickedTile))) {
+        } else {
+            this.secondClickedTile.x = mousePositionX;
+            this.secondClickedTile.y = mousePositionY;
+            this.isFirstClick = true;
+        }
+        if ((this.isFirstClick) && (this.isNeighbors(this.firstClickedTile, this.secondClickedTile))) {
 
-        fcx = this.firstClickedTile.x;
-        fcy = this.firstClickedTile.y;
-        scx = this.secondClickedTile.x;
-        scy = this.secondClickedTile.y;
-        this.swap(fcx, fcy, scx, scy);
+            fcx = this.firstClickedTile.x;
+            fcy = this.firstClickedTile.y;
+            scx = this.secondClickedTile.x;
+            scy = this.secondClickedTile.y;
+            this.swap(fcx, fcy, scx, scy);
 
-        this.drawer.animateSwap(fcx, fcy, scx, scy, this.modelArr, function() {
+            this.drawer.animateSwap(fcx, fcy, scx, scy, this.modelArr, function () {
 
                 maxX = Math.max(fcx, scx);
                 minX = Math.min(fcx, scx);
@@ -169,6 +170,7 @@ Game.prototype.onCellClick = function (mousePositionX, mousePositionY) {
                 self.findGroup(0, self.height - 1, minX, maxX); // find vertical group
                 self.removeGroup();
             });
+        }
     }
 };
 
@@ -241,24 +243,21 @@ Game.prototype.randomGenerateColorsForGroup = function (groups) {
     }
     if (isHorizontalGroup) {
         this.drawer.animateNewHorizontalGroup(this.groups, this.modelArr, function () {
-            self.groups.pop();
-            self.findGroup(0, self.height - 1, 0, self.width - 1);
-            self.removeGroup(self.groups);
-            self.drawer.drawField(self.modelArr);
+            self.findAndRemoveGroup();
         });
     }
     else {
         this.drawer.animateNewVerticalGroup(this.groups, this.modelArr, function () {
-            self.groups.pop();
-            self.findGroup(0, self.height - 1, 0, self.width - 1);
-            self.removeGroup(self.groups);
-            self.drawer.drawField(self.modelArr);
+            self.findAndRemoveGroup();
         });
     }
 };
 
 Game.prototype.findAndRemoveGroup = function () {
-    
+    this.groups.pop();
+    this.findGroup(0, this.height - 1, 0, this.width - 1);
+    this.removeGroup(this.groups);
+    this.drawer.drawField(this.modelArr);
 }; 
 
 Game.prototype.isNeighbors = function (tile1, tile2) {

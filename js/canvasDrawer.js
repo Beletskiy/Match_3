@@ -3,6 +3,7 @@ function CanvasDrawer () {
     this.colors = ['red', 'orange', 'yellow', 'green', 'aqua', 'blue', 'purple', 'silver', 'white'];
     this.canvasField = document.getElementById("canvasGameField");
     this.ctx = this.canvasField.getContext('2d');
+    this.animationState = false;
 }
 
 CanvasDrawer.prototype.drawField = function (modelArr) {
@@ -38,6 +39,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
 
     var ctx = this.ctx,
         cellSize = this.cellSize,
+        self = this,
         shiftX = x2 - x1,
         shiftY = y2 - y1,
         color1 = this.colors[modelArr[x1][y1].color],
@@ -50,6 +52,8 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
         x2Coordinate = x2 * cellSize + 1,
         y1Coordinate = y1 * cellSize + 1,
         y2Coordinate = y2 * cellSize + 1;
+
+    this.animationState = true;
 
     var animateS = function() {
 
@@ -74,6 +78,7 @@ CanvasDrawer.prototype.animateSwap = function (x1, y1, x2, y2, modelArr, callbac
         }
         var timer = setTimeout(animateS, 50);
         if (Math.abs(shiftX) == cellSize + 1 || Math.abs(shiftY) == cellSize + 1) {
+            self.animationState = false;
             clearTimeout(timer);
 
             if (callback) {
@@ -96,6 +101,8 @@ CanvasDrawer.prototype.animateNewHorizontalGroup = function (group, modelArr, ca
         finishY = group[0].finishY,
         self = this;
 
+    this.animationState = true;
+
     var animateS = function() {
         for (var i = startX; i <= finishX; i++) {
             for (var j = startY; j <= finishY; j++) {
@@ -108,7 +115,7 @@ CanvasDrawer.prototype.animateNewHorizontalGroup = function (group, modelArr, ca
         var timer =  setTimeout(animateS, 50);
         if (shiftY == cellSize) {
             clearTimeout(timer);
-
+            self.animationState = false;
             if (callback) {
                 callback();
             }
@@ -129,6 +136,8 @@ CanvasDrawer.prototype.animateNewVerticalGroup = function (group, modelArr, call
         shiftY = cellSize * groupHeight,
         self = this;
 
+    this.animationState = true;
+
     var animateS = function() {
         for (var i = startY; i <= finishY; i++) {
             colorOfTile = self.colors[canvasArr[startX][i].color];
@@ -139,7 +148,7 @@ CanvasDrawer.prototype.animateNewVerticalGroup = function (group, modelArr, call
         var timer =  setTimeout(animateS, 50);
         if (shiftY < 0) {
             clearTimeout(timer);
-
+            self.animationState = false;
             if (callback) {
                 callback();
             }
@@ -164,6 +173,8 @@ CanvasDrawer.prototype.animateHorizontalBlock = function (shiftedBlock, modelArr
         bottomRectCoordinateY = finishY*cellSize + cellSize,
         colorOfTile;
 
+    this.animationState = true;
+
     var animateS = function() {
         ctx.clearRect(leftBorderCoordinate, topRectCoordinateY, groupLength, shiftY);
         ctx.clearRect(leftBorderCoordinate, bottomRectCoordinateY, groupLength, cellSize - shiftY);
@@ -178,7 +189,7 @@ CanvasDrawer.prototype.animateHorizontalBlock = function (shiftedBlock, modelArr
         var timer =  setTimeout(animateS, 50);
         if (shiftY == cellSize + 1) {
             clearTimeout(timer);
-
+            self.animationState = false;
             if (callback) {
                 callback();
             }
@@ -202,6 +213,8 @@ CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  
         activeGroupStartYcoordinate = activeGroup.startY*cellSize,
         colorOfTile;
 
+    this.animationState = true;
+
     ctx.clearRect(activeGroupStartXcoordinate, activeGroupStartYcoordinate, cellSize, activeGroupHeight );
 
     var animateS = function() {
@@ -217,7 +230,7 @@ CanvasDrawer.prototype.animateVerticalBlock = function (activeGroup, modelArr,  
         var timer =  setTimeout(animateS, 20);
         if (shiftY == activeGroupHeight) {
             clearTimeout(timer);
-
+            self.animationState = false;
             if (callback) {
                 callback();
             }
